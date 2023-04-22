@@ -8,14 +8,36 @@ const fs = require('fs').promises;
   const fileHandle= await fs.open("test.txt", "w")
 
   const stream = fileHandle.createWriteStream();
-
-  for(let i=0; i<100000;i++){
+  //const buff = Buffer.alloc(10000000,10);
+  //stream.write(buff)
+//console.log(stream.writableLength)
+let i = 0
+const writeMany=()=>{
+  while( i<1000000){
     const buff = Buffer.from(`${i}`,"utf-8")
-    stream.write(buff)
-    fileHandle.write(`${i}`)
+    //this our last write
+    if(i ===999999){
+return stream.end(buff)
+    }
+    //if stream.write return false,stop the loop
+    if(!stream.write(buff)) break;
+   i++
 
   }
-  console.timeEnd('writeMany')
+
+}
+writeMany();
+
+  stream.on("drain", ()=>{
+    console.log("Drainied!")
+    writeMany()
+  })
+
+  stream.on("finish",()=>{
+    console.timeEnd("writeMany")
+    //fileHandle.close()
+  })
+
 })()
 
 //Its takes 536.549ms to run uses 20% of the cpu(one core)
