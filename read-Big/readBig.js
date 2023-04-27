@@ -1,11 +1,23 @@
 const fs = require('fs').promises;
 
-(async()=>{
+(async () => {
+  try {
+    const fileHandleRead = await fs.open('src.txt', 'r');
+    const fileHandleWrite = await fs.open('dest.txt', 'w');
 
-  const fileHandleRead = await fs.open("test.txt", "r")
+    const streamRead = fileHandleRead.createReadStream({ highWaterMark: 64 * 1024 });
+    const streamWrite = fileHandleWrite.createWriteStream();
 
-  const stream = fileHandleRead.createReadStream({highWaterMark:64*1024})
-  stream.on("data", (chunk)=>{
-    console.log(chunk)
-  })
-})()
+    streamRead.pipe(streamWrite);
+
+    streamRead.on('end', () => {
+      console.log('File read complete.');
+    });
+
+    streamWrite.on('finish', () => {
+      console.log('File write complete.');
+    });
+  } catch (err) {
+    console.error(err);
+  }
+})();
