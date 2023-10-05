@@ -1,0 +1,4 @@
+//encryption/decryption ali = $a1@ crypto module
+//compression 0 1 1 1 1 => 101 using zlib module
+//hashing/salting crypto module
+//decoding/encoding 0 1 0  1 1 => image or video or color etc buffer text/encoding/decoding module
